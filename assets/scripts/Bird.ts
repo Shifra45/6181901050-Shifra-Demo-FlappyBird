@@ -1,11 +1,16 @@
-import { _decorator, Collider2D, Component, Contact2DType, EventTouch, Input, input, IPhysics2DContact, Node, Vec3 } from 'cc';
+import { _decorator, AudioSource, Collider2D, Component, Contact2DType, EventTouch, Input, input, IPhysics2DContact, Label, Node, Vec3 } from 'cc';
 import { ResScreen } from './ResScreen';
 const { ccclass, property } = _decorator;
 
 @ccclass('Bird')
 export class Bird extends Component {
+
+    @property ({type: Label})
+    private labelScore:Label;
+    private score:number = 0;
     private vy:number = 0;
     private gravity:number = 500;
+    private gameover: boolean = false;
 
     start() {
         input.on(Input.EventType.TOUCH_START,this.onTouchStart,this);
@@ -19,7 +24,14 @@ export class Bird extends Component {
         // will be called once when two colliders begin to contact
         // console.log('onBeginContact');
         // alert('game over!');
-        ResScreen.Instance.node.active = true;
+        if(otherCollider.node.name=="score_collider"){
+            this.score++;
+            this.labelScore.string=""+this.score;
+        }else{
+            ResScreen.Instance.node.active = true;
+            this.gameover = true;
+            this.node.setRotationFromEuler(new Vec3(0,0,90));
+        }
     }
 
     // onTouchStart(event: EventTouch) {
@@ -32,9 +44,13 @@ export class Bird extends Component {
     // }
 
     onTouchStart(event: EventTouch){
-        console.log("touch start");
-        // this.node.translate(new Vec3(0,50,0));
-        this.vy = 200;
+        if(!this.gameover){
+            console.log("touch start");
+            // this.node.translate(new Vec3(0,50,0));
+            this.vy = 200;
+            this.getComponent(Animation).play("bird_flap");
+            this.getComponent(AudioSource).playOneShot(this.getComponent(AudioSource).clip);
+        }
     }
 
     update(deltaTime: number) {

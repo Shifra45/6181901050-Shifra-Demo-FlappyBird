@@ -13,7 +13,7 @@ export class Background extends Component {
 
     update(deltaTime: number) {
         // console.log(deltaTime);
-        this.node.translate(new Vec3(-100*deltaTime,0,0));
+        this.node.translate(new Vec3(-10*deltaTime,0,0));
         if(this.node.position.x<=(this.wBackground/2+this.wBackground*-1)){
             this.node.translate(new Vec3(this.wBackground,0,0));
         }
